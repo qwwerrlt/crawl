@@ -3,7 +3,7 @@
 const util = require('./common/util');
 const fs = require('fs');
 const async = require('async');
-
+const _ = require('lodash');
 dazongjiaoyi();
 
 function dazongjiaoyi(){
@@ -17,7 +17,6 @@ function dazongjiaoyi(){
             getStockList(token, _cb);
         },
         (token, list, _cb) => {
-			//console.log(list);
             getContent(token, list, _cb);
         }
     ], (err) => {
@@ -29,6 +28,7 @@ function dazongjiaoyi(){
         }
     });
 }
+
 
 function sign(cb){
 	var url = 'https://gw.yundzh.com/token/access?appid=dcdc435cc4aa11e587bf0242ac1101de&secret_key=InsQbm2rXG5z';
@@ -63,7 +63,6 @@ function getStockList(token, cb) {
 				return cb(e)
 
 			}
-
 		}
 		
 		if (!data.Data || !data.Data.RepDataStkData){
@@ -80,65 +79,71 @@ function getStockList(token, cb) {
 	});
 }
 
+
 function getContent(token, list, cb){
 	
-	let url = "https://gw.yundzh.com/f10/dstx/dzjy?obj=";
 	async.eachSeries(list, (stock, _cb) => {
-		let link = url + stock + '&token=' + token;
-		util.getData(link, (err, data) => {
-			
-			if (err) {
-				return _cb(err);
-			} else if (!data) {
-				return _cb('no data');
-			} else if (data.Err) {
-				return cb(data.Err);
-			} else if (typeof data == 'string') {
-				try {
-					data = JSON.parse(data);
-				} catch (e) {
-					return _cb(e)
-
-				}
-
+		var myData = {
+			stock: stock,
+		}
+		async.waterfall([
+			(__cb) => {
+				let url = "https://gw.yundzh.com/f10/dstx/dzjy?obj=";
+				let link = url + stock + '&token=' + token;
+				getDazongjiaoyi(link, __cb);
+			},
+			(dazongjiaoyi, __cb) => {
+				myData.dazongjiaoyi = dazongjiaoyi.reverse();
+				let outputFilename = '../../f10/dazongjiaoyi/' + stock + '.json';
+				fs.writeFile(outputFilename, JSON.stringify(myData, null, 4), __cb);
+			}], (err) => {
+				if (err) return _cb(err);
+				_cb();
 			}
-			
-			if (!data.Data || !data.Data.RepDataF10DstxDzjyOutput || !data.Data.RepDataF10DstxDzjyOutput[0]){
-				console.log(stock, data,'data exception');
-				return _cb();
-			}
-			
-			let trades = data.Data.RepDataF10DstxDzjyOutput[0].Data;
-			let list = [];
-			trades.forEach((item) => {
-				let trade = {};
-				trade.date = item.date;
-				trade.jg = item.jg;
-				trade.cjl = item.cjl;
-				trade.cjje = item.cjje;
-				trade.mf = item.mf;
-				trade.mf2 = item.mf2;
-				list.push(trade);
-			})
-
-			var myData = {
-				stock: stock,
-				list : list.reverse(),
-			}
-
-			var outputFilename = '../f10/dazongjiaoyi/' + stock + '.json';
-
-			fs.writeFile(outputFilename, JSON.stringify(myData, null, 4), function(err) {
-				if(err) {
-					_cb(err);
-				} else {
-					_cb();
-				}
-			});
-		})
+		);
 	},(err) => {
 		if (err) return cb(err);
 		cb();
 	})
 	
 }
+
+function getDazongjiaoyi(link, cb){
+
+	util.getData(link, (err, data) => {
+		if (err) {
+			return cb(err);
+		} else if (!data) {
+			return cb('no data');
+		} else if (data.Err) {
+			return cb(data.Err);
+		} else if (typeof data == 'string') {
+			try {
+				data = JSON.parse(data);
+			} catch (e) {
+				console.log(link, e);
+				return cb(null, []);
+
+			}
+
+		}
+		if (!data.Data || !data.Data.RepDataF10DstxDzjyOutput || !data.Data.RepDataF10DstxDzjyOutput[0]){
+			console.log(link, 'data exception');
+			return cb(null, []);
+		}
+			
+		let trades = data.Data.RepDataF10DstxDzjyOutput[0].Data;
+		cb(null, _.map(trades, (item) => {
+			return {
+				date: item.date,
+				jg: item.jg,
+				cjl: util.isBigNumber(item.cjl),
+				cjje: util.isBigNumber(item.cjje),
+				mf: item.mf,
+				mf2: item.mf2
+			}
+		}));
+	});
+}
+
+
