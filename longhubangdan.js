@@ -142,6 +142,7 @@ function getLonghubangdan(link, cb){
 				return next.mlje - pre.mlje;
 			});
 			for (let i = 0 ; i < infos.length && i < 5; i++) {
+				if (!infos[0].mlje) break;
 				trade.mlze += infos[i].mlje;
 				trade.zdlx = infos[i].zdlx;
 				trade.mairu.push({
@@ -154,6 +155,7 @@ function getLonghubangdan(link, cb){
 				return next.mcje - pre.mcje;
 			});
 			for (let i = 0 ; i < infos.length && i < 5; i++) {
+				if (!infos[0].mcje) break;
 				trade.mcze += infos[i].mcje;
 				trade.zdlx = infos[i].zdlx;
 				trade.maichu.push({
@@ -174,14 +176,14 @@ function getLonghubangdan(link, cb){
 function filter(string) {
 	if (!string) return string;
 	let reg = /单只标的证券的当日融资买入数量达到当日该证券总交易/;
-    string = '当日融资买入数量占该证券总交易量50%以上';
+    string = string.replace(reg,'当日融资买入数量占该证券总交易量50%以上');
 	reg = /振幅/;
-    string = '当日价格振幅达到15%的证券';
+	string = string.replace(reg,'当日价格振幅达到15%的证券')
     reg = /涨跌幅偏离值/;
-    string = '当日涨跌幅偏离值达7%的证券';
+    string = string.replace(reg,'当日涨跌幅偏离值达7%的证券')
     reg = /换手/;
-    string = '当日换手率达到20%以上';
+    string = string.replace(reg,'当日换手率达到20%以上')
     reg = /单只标的证券的当日融券卖出数量达到当日该证券总交易/;
-    string ='当日融券卖出数量占该证券总交易量50%以上';
+    string = string.replace(reg,'当日融券卖出数量占该证券总交易量50%以上')
     return string;
 }
