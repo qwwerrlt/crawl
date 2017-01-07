@@ -79,7 +79,7 @@ function getStockList(token, cb) {
 		cb(null, token, list);
 	});
 }
-getContent('00000010:1483879031:f749932b5c2a6bc20e0be069e1879ff9a432889f',['SH600196'],function(err,data){
+getContent('00000010:1483879031:f749932b5c2a6bc20e0be069e1879ff9a432889f',['SH600015'],function(err,data){
 	console.log(err,data);
 }) 
 function getContent(token, list, cb){
@@ -90,10 +90,14 @@ function getContent(token, list, cb){
 		}
 		async.waterfall([
 			(__cb) => {
-				getIncomeStatement(stock, __cb);
+				getMainBussiness(stock, __cb);
+			},
+			(mainBussiness, __cb) => {
+				myData.zhuyaozhibiao = mainBussiness;
+				getIncomeStatement(stock, mainBussiness.gross_profit_rate,  __cb);
 			},
 			(incomeStatement, __cb) => {
-				myData.zhuyaozhibiao = incomeStatement
+				_.assign(myData.zhuyaozhibiao, incomeStatement);
 				getClosePX(stock, __cb);
 			},
 			(close_px, __cb) => {
@@ -106,10 +110,6 @@ function getContent(token, list, cb){
 			},
 			(balanceStatement, __cb) => {
 				_.assign(myData.zhuyaozhibiao, balanceStatement);
-				getMainBussiness(stock, __cb);
-			},
-			(mainBussiness, __cb) => {
-				_.assign(myData.zhuyaozhibiao, mainBussiness);
 				getTrend(stock, __cb);
 			},
 			(trend, __cb) => {
@@ -242,7 +242,7 @@ function getHeadlines(stock, close_px, report_date, cb) {
 	});
 }
 
-function getIncomeStatement(stock, cb) {
+function getIncomeStatement(stock, gross_profit_rate, cb) {
 	
 	stock = util.stockDZH2HS(stock);
 	if (!stock) {
@@ -275,10 +275,12 @@ function getIncomeStatement(stock, cb) {
 			console.log(url, data.data[0][date][0], 'no data');
 			return cb(null, {});
 		}
+
 		cb(null, {
 			report_date : info.report_date,
+			gross_profit_rate : (gross_profit_rate == '--') ?  util.isNull((info.operating_profit/info.operating_revenue*100).toFixed(2),'%') : gross_profit_rate,
 			net_profit : util.isNumber(info.net_profit),
-			total_operating_revenue: util.isNumber(info.total_operating_revenue), //营业总收入
+			total_operating_revenue: info.total_operating_revenue ? util.isNumber(info.total_operating_revenue) : util.isNumber(info.operating_revenue), //营业总收入
 			net_profit_per: util.isNull((info.net_profit/info.operating_revenue*100).toFixed(2), '%')  //净利率
 		});
 	});
@@ -355,7 +357,7 @@ function getMainBussiness(stock, cb) {
 		if (!info) {
 			console.log(url, data.data[0][date][0], 'no data');
 			return cb(null, {});
-		}
+		} 
 		cb(null, {
 			gross_profit_rate: util.isNull(info.gross_profit_rate, '%') //毛利率
 		});
@@ -816,7 +818,7 @@ function getStockList(token, cb) {
 		cb(null, token, list);
 	});
 }
-getContent('00000010:1483879031:f749932b5c2a6bc20e0be069e1879ff9a432889f',['SH600196'],function(err,data){
+getContent('00000010:1483879031:f749932b5c2a6bc20e0be069e1879ff9a432889f',['SH600015'],function(err,data){
 	console.log(err,data);
 }) 
 function getContent(token, list, cb){
@@ -827,10 +829,14 @@ function getContent(token, list, cb){
 		}
 		async.waterfall([
 			(__cb) => {
-				getIncomeStatement(stock, __cb);
+				getMainBussiness(stock, __cb);
+			},
+			(mainBussiness, __cb) => {
+				myData.zhuyaozhibiao = mainBussiness;
+				getIncomeStatement(stock, mainBussiness.gross_profit_rate,  __cb);
 			},
 			(incomeStatement, __cb) => {
-				myData.zhuyaozhibiao = incomeStatement
+				_.assign(myData.zhuyaozhibiao, incomeStatement);
 				getClosePX(stock, __cb);
 			},
 			(close_px, __cb) => {
@@ -843,10 +849,6 @@ function getContent(token, list, cb){
 			},
 			(balanceStatement, __cb) => {
 				_.assign(myData.zhuyaozhibiao, balanceStatement);
-				getMainBussiness(stock, __cb);
-			},
-			(mainBussiness, __cb) => {
-				_.assign(myData.zhuyaozhibiao, mainBussiness);
 				getTrend(stock, __cb);
 			},
 			(trend, __cb) => {
@@ -979,7 +981,7 @@ function getHeadlines(stock, close_px, report_date, cb) {
 	});
 }
 
-function getIncomeStatement(stock, cb) {
+function getIncomeStatement(stock, gross_profit_rate, cb) {
 	
 	stock = util.stockDZH2HS(stock);
 	if (!stock) {
@@ -1012,10 +1014,12 @@ function getIncomeStatement(stock, cb) {
 			console.log(url, data.data[0][date][0], 'no data');
 			return cb(null, {});
 		}
+
 		cb(null, {
 			report_date : info.report_date,
+			gross_profit_rate : (gross_profit_rate == '--') ?  util.isNull((info.operating_profit/info.operating_revenue*100).toFixed(2),'%') : gross_profit_rate,
 			net_profit : util.isNumber(info.net_profit),
-			total_operating_revenue: util.isNumber(info.total_operating_revenue), //营业总收入
+			total_operating_revenue: info.total_operating_revenue ? util.isNumber(info.total_operating_revenue) : util.isNumber(info.operating_revenue), //营业总收入
 			net_profit_per: util.isNull((info.net_profit/info.operating_revenue*100).toFixed(2), '%')  //净利率
 		});
 	});
@@ -1092,7 +1096,7 @@ function getMainBussiness(stock, cb) {
 		if (!info) {
 			console.log(url, data.data[0][date][0], 'no data');
 			return cb(null, {});
-		}
+		} 
 		cb(null, {
 			gross_profit_rate: util.isNull(info.gross_profit_rate, '%') //毛利率
 		});
