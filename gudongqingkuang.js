@@ -137,7 +137,7 @@ function getGudongrenshu(stock, cb){
 	if (!stock) {
 		return cb('stock code error');
 	}
-	let url = 'http://www.onehou.com/api/hs/info/v2/query/f10_shareholders?en_prod_code=' + stock;
+	let url = 'http://onehou.com/api/hs/info/v2/query/f10_shareholders?en_prod_code=' + stock;
 	util.getData(url, (err, data) => {
 
 	if (err) {
@@ -173,7 +173,7 @@ function getLastpx(stock, gudongrenshu, cb) {
 	stock = util.stockDZH2HS(stock);
 	async.eachSeries(gudongrenshu, (item, _cb) => {
 		
-		let url = 'http://www.onehou.com/api/hs/quote/v1/kline?get_type=offset&prod_code=' + stock + '&candle_mode=1&candle_period=1&fields=close_px&search_direction=2&min_time=1459&data_count=1&date=' + new Date(item.report_date).toFormat("YYYYMMDD");
+		let url = 'http://onehou.com/api/hs/quote/v1/kline?get_type=offset&prod_code=' + stock + '&candle_mode=1&candle_period=1&fields=close_px&search_direction=2&min_time=1459&data_count=1&date=' + new Date(item.report_date).toFormat("YYYYMMDD");
 		util.getData(url, (err, data) => {
 
 			if (err) {
@@ -240,7 +240,7 @@ function getShidaliutong(stock, cb){
 	if (!stock) {
 		return cb('stock code error');
 	}
-	let url = 'http://www.onehou.com/api/hs/info/v2/query/f10_top10_float_shareholders?en_prod_code=' + stock;
+	let url = 'http://onehou.com/api/hs/info/v2/query/f10_top10_float_shareholders?en_prod_code=' + stock;
 	util.getData(url, (err, data) => {
 
 	if (err) {
@@ -280,7 +280,7 @@ function getShidagudong(stock, cb){
 	if (!stock) {
 		return cb('stock code error');
 	}
-	let url = 'http://www.onehou.com/api/hs/info/v2/query/f10_top10_shareholders?en_prod_code=' + stock;
+	let url = 'http://onehou.com/api/hs/info/v2/query/f10_top10_shareholders?en_prod_code=' + stock;
 	util.getData(url, (err, data) => {
 
 	if (err) {
@@ -360,7 +360,7 @@ function getClosepx(stock, chigubiandong, cb) {
 	stock = util.stockDZH2HS(stock);
 	async.eachSeries(chigubiandong, (item, _cb) => {
 		
-		let url = 'http://www.onehou.com/api/hs/quote/v1/kline?get_type=offset&prod_code=' + stock + '&candle_mode=1&candle_period=1&fields=close_px&search_direction=2&min_time=1459&data_count=1&date=' + new Date(item.date).toFormat("YYYYMMDD");
+		let url = 'http://onehou.com/api/hs/quote/v1/kline?get_type=offset&prod_code=' + stock + '&candle_mode=1&candle_period=1&fields=close_px&search_direction=2&min_time=1459&data_count=1&date=' + new Date(item.date).toFormat("YYYYMMDD");
 		util.getData(url, (err, data) => {
 
 			if (err) {
@@ -412,7 +412,7 @@ function getJijingchigu(stock, cb){
 	if (!stock) {
 		return cb('stock code error');
 	}
-	let url = 'http://www.onehou.com/api/hs/info/v2/query/f10_fund_holdings?en_prod_code=' + stock;
+	let url = 'http://onehou.com/api/hs/info/v2/query/f10_fund_holdings?en_prod_code=' + stock;
 	util.getData(url, (err, data) => {
 
 	if (err) {

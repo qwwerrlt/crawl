@@ -124,7 +124,7 @@ function getGubenjiegou(stock, cb) {
 	if (!stock) {
 		return cb('stock code error');
 	}
-	let url = 'http://www.onehou.com/api/hs/info/v2/query/f10_equity_structure?en_prod_code=' + stock;
+	let url = 'http://onehou.com/api/hs/info/v2/query/f10_equity_structure?en_prod_code=' + stock;
 	util.getData(url, (err, data) => {
 	if (err) {
 			return cb(err);
@@ -196,7 +196,7 @@ function getGudongmingxi(stock, cb) {
 	if (!stock) {
 		return cb('stock code error');
 	}
-	let url = 'http://www.onehou.com/api/hs/info/v2/query/f10_shareholders?en_prod_code=' + stock;
+	let url = 'http://onehou.com/api/hs/info/v2/query/f10_shareholders?en_prod_code=' + stock;
 	util.getData(url, (err, data) => {
 
 	if (err) {
