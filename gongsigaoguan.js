@@ -117,14 +117,14 @@ function getContent(token, list, cb){
 				person.zw = item.zw;
 				person.xl = item.xl;
 				person.xb = item.xb;
-				person.csrq = item.csrq;
+				person.csrq = getAge(item.csrq);
 				list.push(person);
 				let detail = {};
 				detail.xm = item.xm;
 				detail.rzsj = item.rzsj;
 				detail.xb = item.xb;
 				detail.xl = item.xl;
-				detail.csrq = item.csrq;
+				detail.csrq = getAge(item.csrq);
 				detail.zw = item.zw;
 				detail.jl = item.jl;
 				details.push(detail);
@@ -151,4 +151,13 @@ function getContent(token, list, cb){
 		cb();
 	})
 	
+}
+
+function getAge(birthdaty) {
+	if (birthdaty) {
+		let now = new Date().getFullYear();
+		return now - new Date(birthdaty).getFullYear();
+	} else {
+		return '--' 
+	}
 }
